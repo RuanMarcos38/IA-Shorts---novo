@@ -1,35 +1,33 @@
 # IA Shorts — reconstrução em andamento
 
-Esta versão é uma prévia local do painel observado em 10/10/2026. **Não é uma cópia completa e não gera vídeos ainda.** A interface foi reconstruída a partir da sessão autorizada do navegador, sem acesso ao código privado do AutoShortz.
+Painel reconstruído a partir da sessão autorizada do AutoShortz, sem acesso ao código privado. Ainda não há equivalência completa com o original.
 
-## Executar
+## Executar localmente
 
-Requer Node.js 22 ou superior. Execute `node server.mjs` e abra http://127.0.0.1:4173/dashboard/create.
+Requer Node.js 22 ou superior e pnpm. Execute `pnpm install`, copie `.env.example` para `.env.local`, configure suas próprias chaves no arquivo local e execute `pnpm start`. Abra http://127.0.0.1:4173/dashboard/create. O servidor aceita somente conexões locais; não publicar diretamente na Internet.
 
-As seis etapas têm validação, navegação de ida e volta e criação de séries persistida em `data/series.json`. Não há dependências externas para a prévia. O servidor é restrito ao computador local; não publicar esse servidor de desenvolvimento na Internet.
+Nunca envie `.env.local`, chaves ou arquivos de `data/` ao GitHub. As chaves são usadas exclusivamente pelo servidor.
 
-## Escopo verificado
+## Implementado
 
-- Nichos predefinidos e personalizado, roteiro de exemplo e limites de caracteres.
-- Português, inglês e espanhol; cinco nomes de voz observados.
-- Seleção múltipla de músicas e entrada de arquivo de áudio.
-- Nove estilos visuais, cinco estilos de legenda, duas durações.
-- Navegação para Vídeos, Guias, Fale Conosco e Configurações.
+- Assistente com seis etapas e séries persistidas.
+- Integrações Gemini para roteiro estruturado e narração, fal.ai para imagens e Groq para transcrição com tempos.
+- Fila local com prevenção de geração duplicada e registro explícito de falhas.
+- MP4 vertical com imagens, movimento, narração, legendas e música personalizada opcional.
+- Upload de MP3/WAV, acompanhamento dos vídeos, reprodução e download.
+- FFmpeg incluído como dependência; `FFMPEG_PATH` permite escolher uma instalação própria.
 
-## Pendente para equivalência funcional
+## Verificação
 
-- Login Google, Supabase, isolamento dos dados por usuário e políticas de acesso.
-- Gemini: roteiro e narração. Os modelos, prompts e identificadores das vozes originais não são públicos; os nomes Rafael/Heitor/etc. não identificam por si só vozes do Gemini.
-- fal.ai: imagens; modelo e parâmetros originais não identificados.
-- Groq: transcrição e marcação temporal das legendas.
-- Renderização AWS, armazenamento de arquivos, downloads e fila Inngest.
-- Upload persistente e biblioteca/prévias de músicas; requerem os arquivos licenciados do projeto.
-- Cobrança Stripe, limites por plano e suporte com Resend.
-- Guia em vídeo, imagens de legenda e telas pós-criação precisam de inspeção adicional. A lista local de séries é provisória e não foi verificada contra a tela original pós-criação.
-- Interface aproximada: ícones, fontes, prévias de legendas e algumas páginas não são idênticos. Imagens de estilo e logo são referências externas do original, não ativos próprios; substituir por arquivos autorizados antes de publicar.
+`pnpm test`: seis testes passaram, incluindo montagem e decodificação de um MP4 usando FFmpeg real. Nesse teste os provedores são substituídos por respostas controladas. Nenhuma geração completa com as contas reais foi verificada ainda.
 
-As operações sem integração respondem com erro explícito; nenhum vídeo ou envio é simulado. A conta pessoal vista no navegador não foi incluída no código.
+## Limitações e pendências
 
-Provedores divulgados pelo próprio serviço: https://autoshortz.com/privacidade. O modelo funcional descrito é escolher, gerar e baixar/postar manualmente: https://autoshortz.com/termos.
+- As chaves ainda precisam ser configuradas e os provedores precisam de cota/saldo disponível.
+- Modelos, prompts e correspondência das vozes originais não são públicos. Os modelos e vozes desta implementação são configuráveis; resultados não são garantidos como idênticos.
+- A biblioteca musical original e suas prévias não foram obtidas. Música personalizada funciona; escolhas da biblioteca indisponível retornam erro explícito.
+- Login, dados separados por usuário, cobrança/planos, armazenamento remoto, fila distribuída e suporte ainda não estão implementados.
+- Renderização e fila são locais, em vez de AWS/Inngest. Ao reiniciar, trabalhos interrompidos são marcados como falha para evitar repetir chamadas pagas.
+- Ícones, fontes, legendas e páginas secundárias ainda exigem comparação adicional. Logo e imagens dos estilos referenciam o site original; são necessários ativos autorizados para publicação.
 
-**Credenciais:** não colocar chaves em commits, HTML, JavaScript do navegador ou mensagens de chat. A configuração real será feita no ambiente do servidor depois da conexão segura das contas.
+Os fornecedores divulgados pelo serviço estão em https://autoshortz.com/privacidade. O fluxo público está descrito em https://autoshortz.com/termos.
